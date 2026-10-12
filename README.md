@@ -1,5 +1,7 @@
 # AI Security Guardrails — Local Starter
 
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Dinakarnayak/ai-security-guardrails-starter/blob/main/AI_Security_Guardrails_Colab.ipynb)
+
 This small Python demo uses a healthcare-information scenario and two distinct
 guardrails: an input filter (with escalation for configured urgent phrases) and
 an output validator for numeric medication instructions. It is a learning demo,
@@ -37,6 +39,14 @@ python app.py --model "models\YOUR_MODEL_FILE.gguf"
 The program contains no cloud API calls. The model response is still untrusted:
 the input and output rules are simple examples, not a guarantee that every unsafe
 answer will be caught.
+
+## Optional Google Colab companion
+
+[`AI_Security_Guardrails_Colab.ipynb`](AI_Security_Guardrails_Colab.ipynb) runs
+the deterministic self-test in Google Colab. It is useful for learning and
+previewing the rules, but it does not meet the coursework requirement to run the
+assessed system locally unless the module convenor has approved the stated
+device-access exception.
 
 ## Assignment demonstration reminder
 
