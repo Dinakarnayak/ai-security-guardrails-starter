@@ -2,11 +2,11 @@
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Dinakarnayak/ai-security-guardrails-starter/blob/main/AI_Security_Guardrails_Colab.ipynb)
 
-This small Python demo uses a healthcare-information scenario and two distinct
-guardrails: an input filter (with escalation for configured urgent phrases) and
-an output validator for numeric medication instructions. It is a learning demo,
-not a medical service. The keyword rules can miss risks and can also flag benign
-text.
+This MSc-level learning prototype uses a healthcare-information scenario and
+layered controls: system-prompt governance, input filtering and escalation,
+privacy and prompt-injection checks, output validation, and an optional local
+audit trail. It is not a medical service. Pattern rules can miss risks and can
+also flag benign text.
 
 ## Run the guardrail demonstration first
 
@@ -17,9 +17,16 @@ install a model binding or download a model:
 py -3.11 app.py --self-test
 ```
 
-Expected checks: a general question is allowed, a personal medication-dose
-request is blocked, urgent symptoms trigger escalation, and an unsafe simulated
-model answer is replaced.
+Expected checks cover a harmless question, medication request, urgent symptoms,
+prompt injection, contact details, unsafe dose instruction, and overconfident
+diagnosis.
+
+## MSc-level design notes
+
+Read [EVALUATION.md](EVALUATION.md) before recording. It explains the threat
+model, rationale for each control, risk policy, residual limitations, data
+minimisation, and a credible evaluation approach. The CLI prints each decision's
+action, category, risk score, and reason for a live explanation.
 
 ## Optional local model setup
 
@@ -32,13 +39,17 @@ py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python app.py --model "models\YOUR_MODEL_FILE.gguf"
+python app.py --model "models\YOUR_MODEL_FILE.gguf" --audit-log "audit\events.jsonl"
 ```
 
 `llama-cpp-python` loads the GGUF file from disk and runs inference locally.
 The program contains no cloud API calls. The model response is still untrusted:
 the input and output rules are simple examples, not a guarantee that every unsafe
 answer will be caught.
+
+The optional audit log is local JSON Lines. It contains event metadata and a
+SHA-256 hash of text, never raw prompts or model answers. Retain it only as long
+as needed for a demonstration.
 
 ## Optional Google Colab companion
 

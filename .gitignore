@@ -3,4 +3,5 @@ __pycache__/
 *.py[cod]
 models/*.gguf
 models/*.bin
+audit/*.jsonl
 .DS_Store
