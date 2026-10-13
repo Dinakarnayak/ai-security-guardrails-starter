@@ -1,68 +1,64 @@
-# AI Security Guardrails — Local Starter
+# AI Security Guardrails — Research Prototype
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Dinakarnayak/ai-security-guardrails-starter/blob/main/AI_Security_Guardrails_Colab.ipynb)
 
-This MSc-level learning prototype uses a healthcare-information scenario and
-layered controls: system-prompt governance, input filtering and escalation,
-privacy and prompt-injection checks, output validation, and an optional local
-audit trail. It is not a medical service. Pattern rules can miss risks and can
-also flag benign text.
+An offline-first Python research prototype for studying layered guardrails around a small quantized language model in a healthcare-information scenario. It combines system-prompt governance, deterministic input policy checks, output validation, and optional privacy-conscious local audit metadata.
 
-## Run the guardrail demonstration first
+**Research integrity:** this repository is a prototype, not a clinically validated system and not evidence of a completed PhD-level study. The included cases are synthetic smoke tests. Pattern matching can miss risks and block benign content. Never use it for diagnosis, triage, prescribing, or patient care.
 
-The self-test uses only Python's standard library. You can run it before you
-install a model binding or download a model:
+## Quick start on Windows
+
+Python 3.11 is recommended.
 
 ```powershell
+git clone https://github.com/Dinakarnayak/ai-security-guardrails-starter.git
+cd ai-security-guardrails-starter
 py -3.11 app.py --self-test
+py -3.11 -m unittest discover -s tests -v
+py -3.11 evaluate_guardrails.py
 ```
 
-Expected checks cover a harmless question, medication request, urgent symptoms,
-prompt injection, contact details, unsafe dose instruction, and overconfident
-diagnosis.
+The self-test uses only the Python standard library. The unit tests cover core rule behaviour. The evaluation script reports action/category accuracy, precision, recall, false-positive and false-negative rates, plus per-stage results and case-level errors. Review all labels in `evaluation/cases.jsonl` before interpreting metrics; the cases are illustrative, small, and not independently adjudicated.
 
-## MSc-level design notes
+To save a machine-readable report:
 
-Read [EVALUATION.md](EVALUATION.md) before recording. It explains the threat
-model, rationale for each control, risk policy, residual limitations, data
-minimisation, and a credible evaluation approach. The CLI prints each decision's
-action, category, risk score, and reason for a live explanation.
+```powershell
+py -3.11 evaluate_guardrails.py --output evaluation/results.json
+```
 
-## Optional local model setup
+## Research artefacts
 
-Use a small quantized GGUF model whose model card and licence you have checked.
-The model is not included. After downloading it, keep it in a local `models`
-folder. For example:
+- [Research protocol](RESEARCH_PROTOCOL.md): research question, hypotheses, experimental conditions, metrics, statistical reporting, reproducibility and ethics.
+- [Evaluation notes](EVALUATION.md): threat model, risk policy, limitations and evaluation workflow.
+- [Labelled smoke-test cases](evaluation/cases.jsonl): small synthetic JSONL set, including edge cases intended to reveal gaps.
+- [Unit tests](tests/test_guardrails.py): regression checks for deterministic controls.
+- [Evaluation harness](evaluate_guardrails.py): reproducible metric calculation and error export.
+
+## Optional local model
+
+The GGUF model is not included. Check the model card, licence, origin and SHA-256 checksum before use. Use a compatible small quantized model and keep it in a local `models` folder.
 
 ```powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+New-Item -ItemType Directory -Force models
 python app.py --model "models\YOUR_MODEL_FILE.gguf" --audit-log "audit\events.jsonl"
 ```
 
-`llama-cpp-python` loads the GGUF file from disk and runs inference locally.
-The program contains no cloud API calls. The model response is still untrusted:
-the input and output rules are simple examples, not a guarantee that every unsafe
-answer will be caught.
+Replace the placeholder with the exact local model filename. The model is loaded from disk; the app contains no cloud API calls. Model output remains untrusted and can pass through incomplete pattern rules. Installation of `llama-cpp-python` may require a compatible Python version, compiler/runtime or platform-specific wheel.
 
-The optional audit log is local JSON Lines. It contains event metadata and a
-SHA-256 hash of text, never raw prompts or model answers. Retain it only as long
-as needed for a demonstration.
+The optional audit log records event metadata and a SHA-256 hash of text, not raw prompts or answers. Hashes and metadata may still be sensitive; define a retention period and do not log real health information.
 
-## Optional Google Colab companion
+## Evaluation plan
 
-[`AI_Security_Guardrails_Colab.ipynb`](AI_Security_Guardrails_Colab.ipynb) runs
-the deterministic self-test in Google Colab. It is useful for learning and
-previewing the rules, but it does not meet the coursework requirement to run the
-assessed system locally unless the module convenor has approved the stated
-device-access exception.
+Do not present smoke-test metrics as general safety performance. A credible research study should include independently labelled benign, risky, ambiguous, paraphrased, misspelled and multilingual cases; a held-out test set; baseline and ablation comparisons; uncertainty intervals; category-level error analysis; and measured latency/memory. See [RESEARCH_PROTOCOL.md](RESEARCH_PROTOCOL.md).
 
-## Assignment demonstration reminder
+## Coursework demonstration
 
-The attached assessment brief requires a continuous Teams recording of about
-four minutes, with camera and screen sharing, a live explanation, at least two
-guardrail-triggering scenarios, and direct MP4 upload to Blackboard. It says the
-video is the only submission and that you must understand and explain any code
-you present. Check the brief for all recording and identity requirements.
+For the associated local-assistant coursework, use the local execution path and follow the current assessment brief. The prior brief indicated an approximately four-minute continuous Teams recording with camera and screen sharing, at least two triggered guardrail scenarios, and MP4 submission to Blackboard; verify the official brief for current requirements. Be ready to explain and defend the code yourself.
+
+## Scope and safety
+
+This is educational software engineering, not medical software. Urgent-symptom matching is not clinical triage. Do not use real patient data without appropriate ethics review, consent, and data-protection governance. A local model reduces cloud transfer but does not guarantee correctness, privacy, or regulatory compliance.
