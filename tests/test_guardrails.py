@@ -51,6 +51,22 @@ class OutputValidationTests(unittest.TestCase):
         d = validate_output("You definitely have a heart attack.")
         self.assertEqual((d.action, d.category), ("REPLACE", "overconfident_diagnosis"))
 
+    def test_direct_diagnostic_adjective_is_replaced(self):
+        d = validate_output("You are diabetic.")
+        self.assertEqual((d.action, d.category), ("REPLACE", "overconfident_diagnosis"))
+
+    def test_direct_diagnosis_contraction_is_replaced(self):
+        d = validate_output("You've got hypertension.")
+        self.assertEqual((d.action, d.category), ("REPLACE", "overconfident_diagnosis"))
+
+    def test_negated_diagnostic_adjective_is_not_matched(self):
+        d = validate_output("You are not diabetic.")
+        self.assertEqual(d.action, "ALLOW")
+
+    def test_uncertain_diagnostic_adjective_is_not_matched(self):
+        d = validate_output("You may be diabetic.")
+        self.assertEqual(d.action, "ALLOW")
+
     def test_educational_output_is_allowed(self):
         d = validate_output("Blood pressure measures the force of blood against artery walls.")
         self.assertEqual((d.action, d.category), ("ALLOW", "validated_output"))
